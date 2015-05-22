@@ -5,14 +5,21 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.ParcelUuid;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
@@ -22,13 +29,18 @@ public class MainActivity extends ActionBarActivity {
 
     private final static int REQUEST_ENABLE_BT = 1;
     private ListView listView;
+    private TextView btConnectionStatus;
+    private Button btnSend;
+    private BluetoothAdapter mBluetoothAdapter;
+    private InputStream mInputStreamBT;
+    private OutputStream mOutputStreamBT;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
             // Device does not support Bluetooth
         }
@@ -38,15 +50,32 @@ public class MainActivity extends ActionBarActivity {
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
 
-        runSesame(mBluetoothAdapter);
+        listView = (ListView)findViewById(R.id.listBTDevices);
+        btConnectionStatus = (TextView)findViewById(R.id.textView);
+        btnSend = (Button)findViewById(R.id.btnSend);
+        btnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                byte[] buffer = new byte[4];
+                buffer[0] = (byte) 0x30;
+                buffer[1] = (byte) 0x31;
+                buffer[2] = (byte) 0x32;
+                buffer[3] = (byte) 0x33;
+                writeBT(buffer);
+            }
+        });
+
+        runSesame();
     }
 
-    public void runSesame(BluetoothAdapter mBluetoothAdapter) {
-        final UUID SSP_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    public void runSesame() {
+        String LOG_RUNSESAME = "runSesame";
+        final UUID SSP_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
+
         String address = "00:06:66:52:3C:88";
         Set<BluetoothDevice> pairedDevices;
         pairedDevices = mBluetoothAdapter.getBondedDevices();
-        listView = (ListView)findViewById(R.id.listBTDevices);
+
         ArrayList<String> deviceList = new ArrayList();
         for (BluetoothDevice bt : pairedDevices) {
             deviceList.add(bt.getName());
@@ -57,20 +86,44 @@ public class MainActivity extends ActionBarActivity {
         listView.setAdapter(arrayAdapter);
 
         BluetoothDevice btDevice = mBluetoothAdapter.getRemoteDevice(address);
+        btDevice.fetchUuidsWithSdp();
+        ParcelUuid[] uuids = btDevice.getUuids();
+        for (int i = 0; i < uuids.length; i++) {
+            Log.d(LOG_RUNSESAME, uuids[i].toString());
+        }
         mBluetoothAdapter.cancelDiscovery();
         BluetoothSocket btSocket;
 
         try {
             btSocket = btDevice.createRfcommSocketToServiceRecord(SSP_UUID);
+            btConnectionStatus.setText(R.string.bluetooth_connecting);
             btSocket.connect();
+            if (btSocket.isConnected()) {
+                btConnectionStatus.setText(R.string.bluetooth_connected);
+                Log.d(LOG_RUNSESAME, "Connected");
+                mInputStreamBT = btSocket.getInputStream();
+                mOutputStreamBT = btSocket.getOutputStream();
+            } else {
+                btConnectionStatus.setText(R.string.bluetooth_disconnected);
+                Log.d(LOG_RUNSESAME, "Failed to connect.");
+            }
+
         } catch (IOException e) {
             CharSequence text = "Error connecting to BT";
+            btConnectionStatus.setText(R.string.bluetooth_disconnected);
             Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
             toast.show();
         }
 
 
+    }
 
+    public void writeBT(byte[] buffer) {
+        try {
+            mOutputStreamBT.write(buffer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
