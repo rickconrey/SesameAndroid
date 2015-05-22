@@ -13,11 +13,16 @@
 
     <ListView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="200dp"
         android:id="@+id/listBTDevices"
-        android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/textView"
-        android:layout_toEndOf="@+id/textView"
+        android:layout_below="@+id/textView"
         android:layout_marginBottom="162dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/listBTDevices"
+        android:id="@+id/btnSend"
+        android:text="@string/btn_send" />
 
 </RelativeLayout>
