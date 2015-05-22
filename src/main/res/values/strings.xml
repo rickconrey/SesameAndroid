@@ -2,5 +2,7 @@
     <string name="app_name">OpenSesame</string>
     <string name="bluetooth_connected">Connected</string>
     <string name="bluetooth_disconnected">Disconnected</string>
+    <string name="bluetooth_connecting">Connecting...</string>
     <string name="action_settings">Settings</string>
+    <string name="btn_send">Send</string>
 </resources>
