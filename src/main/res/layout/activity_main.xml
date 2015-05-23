@@ -22,7 +22,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/listBTDevices"
+        android:layout_toRightOf="@id/btnConnect"
         android:id="@+id/btnSend"
         android:text="@string/btn_send" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnConnect"
+        android:text="@string/btn_connect"
+        android:layout_below="@id/listBTDevices"/>
 
 </RelativeLayout>
