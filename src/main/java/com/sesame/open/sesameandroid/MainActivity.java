@@ -58,10 +58,10 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 byte[] buffer = new byte[4];
-                buffer[0] = (byte) 0x30;
-                buffer[1] = (byte) 0x31;
-                buffer[2] = (byte) 0x32;
-                buffer[3] = (byte) 0x33;
+                buffer[0] = (byte) 0x4F;    // O
+                buffer[1] = (byte) 0x50;    // P
+                buffer[2] = (byte) 0x45;    // E
+                buffer[3] = (byte) 0x4E;    // N
                 writeBT(buffer);
             }
         });
