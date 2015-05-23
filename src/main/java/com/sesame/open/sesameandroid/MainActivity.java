@@ -31,6 +31,7 @@ public class MainActivity extends ActionBarActivity {
     private ListView listView;
     private TextView btConnectionStatus;
     private Button btnSend;
+    private Button btnConnect;
     private BluetoothAdapter mBluetoothAdapter;
     private InputStream mInputStreamBT;
     private OutputStream mOutputStreamBT;
@@ -65,7 +66,13 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        runSesame();
+        btnConnect = (Button)findViewById(R.id.btnConnect);
+        btnConnect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                runSesame();
+            }
+        });
     }
 
     public void runSesame() {
