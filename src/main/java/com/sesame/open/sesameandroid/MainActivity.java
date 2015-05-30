@@ -35,6 +35,7 @@ public class MainActivity extends ActionBarActivity {
     private BluetoothAdapter mBluetoothAdapter;
     private InputStream mInputStreamBT;
     private OutputStream mOutputStreamBT;
+    private static final byte[] CODE_WORD = {0x12, 0x34, 0x56, 0x78};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,10 +59,10 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 byte[] buffer = new byte[4];
-                buffer[0] = (byte) 0x4F;    // O
-                buffer[1] = (byte) 0x50;    // P
-                buffer[2] = (byte) 0x45;    // E
-                buffer[3] = (byte) 0x4E;    // N
+                buffer[0] = CODE_WORD[0];
+                buffer[1] = CODE_WORD[1];
+                buffer[2] = CODE_WORD[2];
+                buffer[3] = CODE_WORD[3];
                 writeBT(buffer);
             }
         });
