@@ -6,7 +6,7 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.ParcelUuid;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,13 +25,12 @@ import java.util.Set;
 import java.util.UUID;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
 
     private final static int REQUEST_ENABLE_BT = 1;
     private ListView listView;
     private TextView btConnectionStatus;
-    private Button btnSend;
-    private Button btnConnect;
+
     private BluetoothAdapter mBluetoothAdapter;
     private InputStream mInputStreamBT;
     private OutputStream mOutputStreamBT;
@@ -41,9 +40,15 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Button btnSend;
+        Button btnConnect;
+
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
             // Device does not support Bluetooth
+            Toast toast = Toast.makeText(getApplicationContext(), "Bluetooth not supported.",
+                    Toast.LENGTH_SHORT);
+            toast.show();
         }
 
         if (!mBluetoothAdapter.isEnabled()) {
@@ -57,11 +62,7 @@ public class MainActivity extends ActionBarActivity {
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                byte[] buffer = new byte[4];
-                buffer[0] = BluetoothAccess.CODE_WORD[0];
-                buffer[1] = BluetoothAccess.CODE_WORD[1];
-                buffer[2] = BluetoothAccess.CODE_WORD[2];
-                buffer[3] = BluetoothAccess.CODE_WORD[3];
+                byte[] buffer = BluetoothAccess.CODE_WORD;
                 writeBT(buffer);
             }
         });
@@ -75,7 +76,7 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
-    public void runSesame() {
+    void runSesame() {
         String LOG_RUNSESAME = "runSesame";
         final UUID SSP_UUID = UUID.fromString(BluetoothAccess.BLUETOOTH_UUID);
 
@@ -95,8 +96,8 @@ public class MainActivity extends ActionBarActivity {
         BluetoothDevice btDevice = mBluetoothAdapter.getRemoteDevice(address);
         btDevice.fetchUuidsWithSdp();
         ParcelUuid[] uuids = btDevice.getUuids();
-        for (int i = 0; i < uuids.length; i++) {
-            Log.d(LOG_RUNSESAME, uuids[i].toString());
+        for (ParcelUuid uuid : uuids) {
+            Log.d(LOG_RUNSESAME, uuid.toString());
         }
         mBluetoothAdapter.cancelDiscovery();
         BluetoothSocket btSocket;
@@ -125,7 +126,7 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
-    public void writeBT(byte[] buffer) {
+    void writeBT(byte[] buffer) {
         try {
             mOutputStreamBT.write(buffer);
         } catch (IOException e) {
