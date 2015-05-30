@@ -36,6 +36,8 @@ public class MainActivity extends ActionBarActivity {
     private InputStream mInputStreamBT;
     private OutputStream mOutputStreamBT;
     private static final byte[] CODE_WORD = {0x12, 0x34, 0x56, 0x78};
+    private static final String BLUETOOTH_ADDRESS = "00:00:00:00:00:00";
+    private static final String BLUETOOTH_UUID = "00001101-0000-1000-8000-00805f9b34fb";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,9 +80,9 @@ public class MainActivity extends ActionBarActivity {
 
     public void runSesame() {
         String LOG_RUNSESAME = "runSesame";
-        final UUID SSP_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
+        final UUID SSP_UUID = UUID.fromString(BLUETOOTH_UUID);
 
-        String address = "00:06:66:52:3C:88";
+        String address = BLUETOOTH_ADDRESS;
         Set<BluetoothDevice> pairedDevices;
         pairedDevices = mBluetoothAdapter.getBondedDevices();
 
